@@ -108,11 +108,13 @@ class BearspaceSpider(scrapy.Spider):
         # Populate the link, title, body and Date Fields
         product_item_loader.add_value("url", response.meta["url"])
         product_item_loader.add_css("title", "div._1TImB h1._2qrJF::text")
+        
         product_item_loader.add_value("media", media)
         product_item_loader.add_value("height_cm", data)
-        #
+        
         product_item_loader.add_value("width_cm", data)
         product_item_loader.add_value('price_gbp', data)
+
         yield product_item_loader.load_item()
 
     # @staticmethod
