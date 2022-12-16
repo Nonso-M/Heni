@@ -75,8 +75,8 @@ class BearspaceSpider(scrapy.Spider):
             )
             yield request
 
-    @staticmethod
-    def product_parser(response):
+
+    def product_parser(self, response):
         """
         A function that reads individual news articles collecting the headline,
         date and news body.
@@ -101,9 +101,10 @@ class BearspaceSpider(scrapy.Spider):
         # # height, width = [x.strip() for x in parse_list[1].split('x')]
         price = response.css(
             "span[data-hook='formatted-primary-price']::text").get()
+
         json_text = response.css("script#wix-warmup-data::text").get()
 
-        # height, width, price = self.parse_price(json_text)
+        price = self.parse_price(json_text)
 
         # Populate the link, title, body and Date Fields
         product_item_loader.add_value("url", response.meta["url"])
@@ -113,25 +114,23 @@ class BearspaceSpider(scrapy.Spider):
         product_item_loader.add_value("height_cm", data)
         
         product_item_loader.add_value("width_cm", data)
-        product_item_loader.add_value('price_gbp', data)
+        product_item_loader.add_value('price_gbp', price)
 
         yield product_item_loader.load_item()
 
-    # @staticmethod
-    # def parse_price(text):
-    #     """
-    #     Parses the price from the json in the script tag and returns the actual price
-    #     :return: Price of the art
-    #     :rtype:
-    #     """
-    #     json_obj = json.loads(text)
-    #     key1 = list(json_obj["appsWarmupData"].keys())[0]
-    #     key2 = list(json_obj["appsWarmupData"][key1].keys())[0]
-    #     products = json_obj["appsWarmupData"][key1][key2]["catalog"]["product"]
-    #
-    #     # parse the height and width and price
-    #     height = products["media"][0]["width"]
-    #     width = products["media"][0]["height"]
-    #     price = str(int(products["price"] / 10))
-    #
-    #     yield height, width, price
+    @staticmethod
+    def parse_price(text):
+        """
+        Parses the price from the json in the script tag and returns the actual price
+        :return: Price of the art
+        :rtype:
+        """
+        json_obj = json.loads(text)
+        key1 = list(json_obj["appsWarmupData"].keys())[0]
+        key2 = list(json_obj["appsWarmupData"][key1].keys())[0]
+        products = json_obj["appsWarmupData"][key1][key2]["catalog"]["product"]
+
+        # parse the from the json price
+        price = str(int(products["price"]))
+
+        yield price

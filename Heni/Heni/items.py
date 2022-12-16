@@ -97,6 +97,7 @@ class HeniscraperItem(scrapy.Item):
         output_processor=TakeFirst())
 
     # # parse the price using the function defined
-    price_gbp = scrapy.Field(
-        input_processor=MapCompose(extract_price),
-        output_processor=TakeFirst())
+    price_gbp = scrapy.Field()
+    # price_gbp = scrapy.Field(
+    #     input_processor=MapCompose(extract_price),
+    #     output_processor=TakeFirst())
