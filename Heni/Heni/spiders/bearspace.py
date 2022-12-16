@@ -12,21 +12,22 @@ class BearspaceSpider(scrapy.Spider):
     links crawled.
     Outputs data as JSON files with 4 attributes: link, headline,
     body, date.
-
     This class inherits behaviour from scrapy.Spider class.
     """
 
     name = 'bearspace'
+
     # Domain allowed for managing redirects
     allowed_domains = ['www.bearspace.co.uk']
 
     # Url to begin scraping
     start_urls = ['http://www.bearspace.co.uk/purchase']
+
     button = None
     start_page = 1
     articles_no = 0
     custom_settings = {
-        'FEEDS': {'productss.csv': {'format': 'csv', }}
+        'FEEDS': {'./Heni/data/products.csv': {'format': 'csv', }}
     }
 
     def parse(self, response):
@@ -39,11 +40,10 @@ class BearspaceSpider(scrapy.Spider):
         # scrapes response on the current page
         yield from self.scrape(response)
 
-        # gets the number of articles on the page to be used in defining the while loop
-        # self.no_of_articles = len(
-        #     response.css("li[data-hook=product-list-grid-item]").getall())
+        # Checks for the availability of the 'load more button'
         self.button = response.css("button.txtqbB").get()
 
+        # If the button is still available, keep scraping
         if self.button is not None:
             self.articles_no += 20
             current_url = self.start_urls[0] + f'?page={self.start_page + 1}'
@@ -61,14 +61,12 @@ class BearspaceSpider(scrapy.Spider):
         article_dom = response.css(
             "div.pNCdXj section[data-hook='product-list']"
         )
-        # self.button = len(
-        #     article_dom.css("li[data-hook=product-list-grid-item]").getall())
+
         # self.button = response.css("button.txtqbB").get()
         # Loop through the article DOM to retrieve links
         for product_url in article_dom.css(
                 "li[data-hook=product-list-grid-item] a.oQUvqL::attr(href)").getall()[
                            self.articles_no:]:
-            # make full link
 
             # make request to the news_reader function
             request = scrapy.Request(
@@ -77,7 +75,8 @@ class BearspaceSpider(scrapy.Spider):
             )
             yield request
 
-    def product_parser(self, response):
+    @staticmethod
+    def product_parser(response):
         """
         A function that reads individual news articles collecting the headline,
         date and news body.
@@ -85,7 +84,7 @@ class BearspaceSpider(scrapy.Spider):
         :returns: populated item loader- json/csv/jsonlines
         """
 
-        # Instantiate an Item Loader to populate various fields and person data cleanin
+        # Instantiate an Item Loader to populate various fields and person data cleaning
         product_item_loader = ItemLoader(item=HeniscraperItem(),
                                          response=response)
 
