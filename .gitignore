@@ -1,4 +1,13 @@
+**/.idea/
+venv/
 
-.idea/vcs.xml
-.idea/vcs.xml
-requirements.txt
+Byte-compiled / optimized / DLL files
+pycache/
+
+*.py[cod]
+
+*$py.class
+
+**/__pycache__/
+**/Heni/Heni/__pycache__/
+**/Heni/Heni/spiders/__pycache__/
