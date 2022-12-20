@@ -11,3 +11,6 @@ pycache/
 **/__pycache__/
 **/Heni/Heni/__pycache__/
 **/Heni/Heni/spiders/__pycache__/
+
+#Ignoring Idea files
+.idea/
